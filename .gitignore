@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+生产产物/数据库.parquet
+.DS_Store
+*.log
