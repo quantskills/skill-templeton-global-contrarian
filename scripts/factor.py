@@ -234,7 +234,7 @@ def get_industry_data() -> pd.DataFrame:
         if ind_col:
             df = df.rename(columns={ind_col: "industry"})
         
-        return df[["ts_code", "stock_name", "industry"]].dropna()
+        return df[["ts_code", "stock_name", "industry"]].dropna().drop_duplicates(subset=["ts_code"], keep="first")
     except Exception as e:
         print(f"[factor] ⚠️  获取行业数据失败: {e}")
         return pd.DataFrame()
