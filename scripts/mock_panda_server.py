@@ -5,19 +5,14 @@
 """
 
 import json
-import os
 import random
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# 本地测试用的假账号。绝不要在这里写真实凭证——本仓库是公开的。
-# 需要换成别的值时用环境变量覆盖，不要改动源码：
-#   MOCK_PANDA_USERNAME=... MOCK_PANDA_PASSWORD=... python scripts/mock_panda_server.py
 users = {
-    os.environ.get("MOCK_PANDA_USERNAME", "mock_user"):
-        os.environ.get("MOCK_PANDA_PASSWORD", "mock_password"),
+    "8618179169585": "wcy87893766"
 }
 
 tokens = {}
