@@ -160,6 +160,8 @@ def calculate_factor_value(daily_df: pd.DataFrame, financial_df: pd.DataFrame,
         if "stock_symbol" in industry_df.columns:
             industry_df = industry_df.rename(columns={"stock_symbol": "ts_code"})
         if "industry" in industry_df.columns and "ts_code" in industry_df.columns:
+            # 一股可能归属多个 L1 行业，去重保证 merge 为 1:1，避免日线行数重复
+            industry_df = industry_df.drop_duplicates(subset=["ts_code"], keep="first")
             df = df.merge(industry_df, on="ts_code", how="left")
     if "industry" not in df.columns:
         df["industry"] = "unknown"
@@ -270,6 +272,8 @@ def main():
     parser = argparse.ArgumentParser(description="Templeton 逆向全球价值因子回测（官方SDK版）")
     parser.add_argument("--period", type=int, default=20, help="持有期天数")
     parser.add_argument("--market", type=str, default="cn", choices=["cn", "hk", "us"])
+    parser.add_argument("--end-date", type=str, default="20260717",
+                        help="回测基准日（格式：YYYYMMDD），默认取最近可用交易日")
     parser.add_argument("--username", type=str, default=None)
     parser.add_argument("--password", type=str, default=None)
     parser.add_argument("--no-interactive", action="store_true")
@@ -293,8 +297,8 @@ def main():
     print("\n--- 回测指标 ---")
 
     try:
-        end_date = datetime.now().strftime("%Y%m%d")
-        start_date = (datetime.now() - timedelta(days=500)).strftime("%Y%m%d")
+        end_date = args.end_date
+        start_date = (datetime.strptime(end_date, "%Y%m%d") - timedelta(days=500)).strftime("%Y%m%d")
 
         daily_df = None
         industry_df = None
@@ -332,7 +336,7 @@ def main():
 
         daily_df = load_forward_returns(daily_df, args.period)
 
-        index_start = (datetime.now() - timedelta(days=120)).strftime("%Y%m%d")
+        index_start = (datetime.strptime(end_date, "%Y%m%d") - timedelta(days=60)).strftime("%Y%m%d")
         index_df = panda_data.get_index_indicator(start_date=index_start, end_date=end_date)
         market_z = calculate_market_z(index_df)
         print(f"[backtest] 市场情绪 Z-score: {market_z:.2f}")
