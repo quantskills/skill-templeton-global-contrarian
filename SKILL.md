@@ -1,23 +1,7 @@
 ---
-name: skill-templeton-global-contrarian
-description: "当需要开发、计算、验证 John Templeton 逆向全球价值因子时，使用此 skill。适用于 A 股/港股/美股跨市场价值筛选，基于估值偏离度识别极端低估/高估机会，生成 buy/sell/hold 信号。"
-quantSkills:
-  organization: https://github.com/quantskills
-  repository: quantskills/skill-templeton-global-contrarian
-  repository_url: https://github.com/quantskills/skill-templeton-global-contrarian
-  project_type: skill
-  collection: alpha-factor
-  license: GPL-3.0
-  category: factor
-  tags: [quant, alpha, stock, global, contrarian, value,逆向,价值因子,跨市场]
-  platforms: [claude-code, codex, openclaw]
-  language: zh-en
-  status: stable
-  validation_level: verified
-  maintainer_type: community
-  requires: []
-  summary_zh: 邓普顿逆向全球价值因子，A股/港股/美股跨市场估值偏离度筛选
-  summary_en: John Templeton contrarian global value factor for cross-market valuation deviation screening
+name: alpha-templeton-contrarian
+description: 当需要开发、计算、验证 John Templeton 逆向全球价值因子时，使用此 skill。适用于 A 股/港股/美股跨市场价值筛选，基于估值偏离度识别极端低估/高估机会，生成 buy/sell/hold 信号。
+tags: [quant, alpha, development, stock, global, contrarian]
 ---
 
 # Templeton 逆向全球价值 Alpha
@@ -37,30 +21,25 @@ John Templeton 的逆向投资哲学：**"在极度悲观时买入，在极度�
 ### 计算公式
 
 ```
-# 市场情绪 Z-score（基于A股指数 PE/PB 历史偏离度）
+# 单市场估值偏离度
 market_z_score = (当前估值 - 历史均值) / 历史标准差
 
-# 个股估值 Z-score（基于个股 PE 相对于行业均值的偏离度，过滤 pe <= 0）
-stock_z_score = -(个股PE - 行业均值) / 行业标准差
+# 个股估值偏离度
+stock_z_score = (个股P/E - 行业均值) / 行业标准差
 
 # 综合逆向因子
-factor_value = market_z_score × stock_z_score
-
-# 信号方向
-# market_z > 0（乐观市场）：factor 值低 = 便宜 → sell；factor 值高 = 贵 → buy（反向逻辑）
-# market_z < 0（悲观市场）：factor 值高 = 便宜 → buy；factor 值低 = 贵 → sell（正向逻辑）
-# score = abs(factor_value) 排名百分位
+factor_value = -market_z_score * stock_z_score  ← 越大越值得逆向买入
 ```
 
 ### 排序方向
 
-`score` 越高 → 估值偏离程度越大 → 信号越强（buy/sell 均取极端值）
+`factor_value` 越大 → 市场极度悲观 + 个股极度低估 → 信号越强（升序排列，值大优先）
 
 ### 适用市场
 
-- A 股全市场（CN）
-- 港股全市场（HK）
-- 美股全市场（US）
+- A 股全市场
+- 港股全市场
+- 美股全市场
 - 跨市场综合筛选
 
 ## 输入数据
@@ -70,11 +49,12 @@ factor_value = market_z_score × stock_z_score
 | trade_date | `get_stock_daily` / `get_hk_daily` / `get_us_daily` | 筛选基准日 |
 | ts_code | 各市场日线接口 | 股票代码 |
 | close | 各市场日线接口 | 收盘价 |
-| pe | `get_stock_mktfin_indicator` | 动态市盈率（A股） |
-| pe_ttm | 日线接口自带 | 动态市盈率（港/美） |
-| pb | `get_index_indicator` | 市净率 |
+| pe_ttm | `get_stock_pv_indicator` / `pv_metric` | 动态市盈率 |
+| pb | `get_stock_pv_indicator` / `pv_metric` | 市净率 |
+| ps | `get_stock_pv_indicator` / `pv_metric` | 市销率 |
+| dividend_yield | `get_stock_pv_indicator` / `pv_metric` | 股息率 |
 | index_pe | `get_index_indicator` | A 股指数估值（市场情绪） |
-| industry | `get_industry_constituents` | 行业分类 |
+| index_pb | `get_index_indicator` | A 股指数市净率 |
 
 ### 时点对齐（as_of_date）
 
@@ -84,7 +64,7 @@ factor_value = market_z_score × stock_z_score
 
 ### PandaAI data 实现
 
-详见 [references/data_guide.md](references/data_guide.md)
+详见 [data_guide.md](references/data_guide.md)
 
 ## 输出结果
 
@@ -100,7 +80,7 @@ factor_value = market_z_score × stock_z_score
 | factor_name | str | "邓普顿逆向全球价值因子" |
 | factor_value | float | 综合逆向因子值 |
 | score | float | 截面 rank 百分位 0-100 |
-| rank | int | 截面排名（分位越高越极端） |
+| rank | int | 截面排名（升序，rank=1 最值得买入） |
 | signal | str | buy / hold / sell |
 | confidence | float | 信号置信度 0-1 |
 | data_version | str | 数据版本号 YYYYMMDD_HHMMSS |
@@ -108,20 +88,21 @@ factor_value = market_z_score × stock_z_score
 
 ### signal 生成规则
 
-- `buy`：`score >= 80`（最被低估的 20%）
-- `sell`：`score >= 60` 且 < 80（高估的 20%）
-- `hold`：其余
+- `buy`：市场 z_score < -1.5（极度悲观）且个股 z_score < -1.0（极度低估）且流动性达标
+- `hold`：市场 z_score < 0 或个股 z_score < 0，但不满足 buy 全部条件
+- `sell`：其余
 
 ### 附加输出字段
 
 | 字段 | 说明 |
 |------|------|
-| pe | 市盈率 |
+| pe_ttm | 动态市盈率 |
 | pb | 市净率 |
+| ps | 市销率 |
+| dividend_yield | 股息率 |
 | market_z_score | 市场情绪偏离度 |
 | stock_z_score | 个股估值偏离度 |
-| industry | 行业 |
-| valuation_method | PE_TTM_calc / PE_indicator |
+| industry_pe_avg | 行业平均市盈率 |
 
 ## 使用方式
 
@@ -179,32 +160,4 @@ python scripts/backtest.py --period 20
 3. **回测指标达标**：|IC| > 0.03，|ICIR| > 0.5
 4. **PandaAI data 数据源确认**：所有数据来自 panda_data SDK
 5. **Parquet 质量检查通过**：主键唯一、字段完整
-6. **验证脚本输出 PASS**：validate.py 所有检测项输出 PASS
-
-## 目录结构
-
-```
-skill-templeton-global-contrarian/
-├── SKILL.md
-├── scripts/
-│   ├── factor.py          # 因子计算主脚本
-│   ├── validate.py         # 因子验证脚本
-│   ├── backtest.py        # 因子回测脚本
-│   ├── probe_interfaces.py # 接口探测脚本
-│   └── mock_panda_server.py # Mock 测试服务器
-├── references/
-│   ├── data_guide.md       # 数据接口文档
-│   └── source_boundary.md  # 外部数据边界说明
-├── agents/
-│   └── openai.yaml        # Agent 配置
-├── 生产产物/
-│   └── 数据库.parquet      # 最新因子输出
-├── review_templeton_panda_sdk_factcheck_20260717.md  # 接口调研报告
-├── README.md
-├── README.en.md
-└── LICENSE
-```
-
-## References
-
-Use `references/source_boundary.md`.
+6. **验证脚本输出 PASS**：validate.py 所有检测项输出 ✅ PASS
