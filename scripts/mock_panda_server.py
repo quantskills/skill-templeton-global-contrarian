@@ -5,15 +5,34 @@
 """
 
 import json
+import os
 import random
 from datetime import datetime, timedelta
+from pathlib import Path
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-users = {
-    "8618179169585": "wcy87893766"
-}
+
+def _load_env_file(env_path: str = None):
+    if env_path is None:
+        env_path = Path(__file__).parent.parent / ".env"
+    if env_path.exists():
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ[key.strip()] = value.strip()
+
+
+# 凭据只从 .env / 环境变量读取，不在源码中明文保存
+_load_env_file()
+users = {}
+_mock_user = os.environ.get("PANDA_USERNAME", "")
+_mock_pass = os.environ.get("PANDA_PASSWORD", "")
+if _mock_user and _mock_pass:
+    users[_mock_user] = _mock_pass
 
 tokens = {}
 
