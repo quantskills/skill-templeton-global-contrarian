@@ -1,5 +1,5 @@
 ---
-name: alpha-templeton-global-value-v2
+name: templeton-global-contrarian
 description: 当需要开发、计算、验证 Templeton 全球价值多因子 V2 时，使用此 skill。适用于 A 股/港股/美股跨市场价值筛选，基于 EP/BP/SP/股息/ROE/杠杆/动量 七子因子截面打分，生成 buy/sell/hold 信号。
 tags: [quant, alpha, development, stock, global, value, multifactor]
 ---
