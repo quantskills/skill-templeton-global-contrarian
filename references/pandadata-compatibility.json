@@ -1,0 +1,162 @@
+{
+  "sdk_version": "1.0.6",
+  "contract_repository": "quantskills/skill-pandadata-api",
+  "contract_commit": "3f573a4140e4d1d02c556d981fac347168c943bb",
+  "required_methods": [
+    "get_fina_reports",
+    "get_hk_daily",
+    "get_index_indicator",
+    "get_industry_constituents",
+    "get_share_float",
+    "get_stock_daily",
+    "get_stock_mktfin_indicator",
+    "get_stock_pv_indicator",
+    "get_us_daily",
+    "init_token"
+  ],
+  "validation": {
+    "offline_contract": "passed",
+    "live_service": "not_tested"
+  },
+  "runtime_entrypoint": "SKILL.md",
+  "method_contracts": {
+    "get_fina_reports": {
+      "signature": "(start_quarter: 'str' = '', end_quarter: 'str' = '', symbol: 'Optional[Union[str, List[str]]]' = None, fields: 'Optional[Union[str, List[str]]]' = None, date: 'Optional[str]' = None, is_latest: 'Optional[bool]' = True, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "start_quarter",
+        "end_quarter",
+        "symbol",
+        "fields",
+        "date",
+        "is_latest"
+      ],
+      "required": [],
+      "runtime_required": [
+        "end_quarter",
+        "start_quarter"
+      ],
+      "upstream_warning": false
+    },
+    "get_hk_daily": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, start_date: 'Optional[str]' = None, end_date: 'Optional[str]' = None, fields: 'Optional[Union[str, List[str]]]' = None, frequency: 'str' = '1D', **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "start_date",
+        "end_date",
+        "fields",
+        "frequency"
+      ],
+      "required": [],
+      "runtime_required": [
+        "end_date",
+        "start_date"
+      ],
+      "upstream_warning": false
+    },
+    "get_index_indicator": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, start_date: 'Optional[str]' = None, end_date: 'Optional[str]' = None, fields: 'Optional[Union[str, List[str]]]' = None, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "start_date",
+        "end_date",
+        "fields"
+      ],
+      "required": [],
+      "runtime_required": [],
+      "upstream_warning": false
+    },
+    "get_industry_constituents": {
+      "signature": "(industry_code: 'Optional[Union[str, List[str]]]' = None, stock_symbol: 'Optional[Union[str, List[str]]]' = None, level: 'Optional[str]' = None, fields: 'Optional[Union[str, List[str]]]' = None, reference: 'Optional[str]' = 'sws_2021', date: 'Optional[str]' = None) -> 'pd.DataFrame'",
+      "parameters": [
+        "industry_code",
+        "stock_symbol",
+        "level",
+        "fields",
+        "reference",
+        "date"
+      ],
+      "required": [],
+      "runtime_required": [],
+      "upstream_warning": false
+    },
+    "get_share_float": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, start_date: 'str' = None, end_date: 'str' = None, fields: 'Optional[Union[str, List[str]]]' = None, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "start_date",
+        "end_date",
+        "fields"
+      ],
+      "required": [],
+      "runtime_required": [
+        "end_date",
+        "start_date"
+      ],
+      "upstream_warning": false
+    },
+    "get_stock_daily": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = '', start_date: 'str' = '', end_date: 'str' = '', fields: 'Optional[Union[str, List[str]]]' = None, indicator: 'Optional[str]' = '', st: 'Optional[bool]' = True, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "start_date",
+        "end_date",
+        "fields",
+        "indicator",
+        "st"
+      ],
+      "required": [],
+      "runtime_required": [
+        "end_date",
+        "start_date"
+      ],
+      "upstream_warning": false
+    },
+    "get_stock_mktfin_indicator": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, fields: 'Optional[Union[str, List[str]]]' = None, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "fields"
+      ],
+      "required": [],
+      "runtime_required": [],
+      "upstream_warning": false
+    },
+    "get_stock_pv_indicator": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, fields: 'Optional[Union[str, List[str]]]' = None, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "fields"
+      ],
+      "required": [],
+      "runtime_required": [],
+      "upstream_warning": false
+    },
+    "get_us_daily": {
+      "signature": "(symbol: 'Optional[Union[str, List[str]]]' = None, start_date: 'Optional[str]' = None, end_date: 'Optional[str]' = None, fields: 'Optional[Union[str, List[str]]]' = None, **kwargs) -> 'pd.DataFrame'",
+      "parameters": [
+        "symbol",
+        "start_date",
+        "end_date",
+        "fields"
+      ],
+      "required": [],
+      "runtime_required": [
+        "end_date",
+        "start_date"
+      ],
+      "upstream_warning": false
+    },
+    "init_token": {
+      "signature": "(username: 'Optional[str]' = '', password: 'Optional[str]' = '', base_url: 'Optional[str]' = 'https://pandadata.pandaaiquant.com', country: 'Optional[str]' = 'CN') -> 'str'",
+      "parameters": [
+        "username",
+        "password",
+        "base_url",
+        "country"
+      ],
+      "required": [],
+      "runtime_required": [],
+      "upstream_warning": false
+    }
+  }
+}

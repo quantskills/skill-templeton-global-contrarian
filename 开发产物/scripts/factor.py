@@ -137,17 +137,7 @@ def get_financial_ttm(ts_codes: list, as_of_date: str) -> pd.DataFrame:
             print(f"    ⚠️  获取{quarter}数据失败: {e}")
             continue
     
-    if not all_fina:
-        print("    ⚠️  get_fina_reports 返回空，尝试使用 get_fina_statement")
-        try:
-            df = panda_data.get_fina_statement(symbol=ts_codes[:100])
-            if df is not None and not df.empty:
-                df["quarter"] = "latest"
-                all_fina.append(df)
-                print(f"    get_fina_statement 返回 {len(df)} 条记录")
-        except Exception as e:
-            print(f"    ⚠️  get_fina_statement 也失败: {e}")
-    
+    # get_fina_statement is a foreign-market interface, not an A-share fallback.
     if not all_fina:
         return pd.DataFrame()
     

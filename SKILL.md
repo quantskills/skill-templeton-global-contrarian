@@ -266,3 +266,7 @@ python scripts/backtest.py --market cn --end-date 20250630 --period 20
 | 2026-08-09 | v1.5 | V1 凭据清理、港股/全市场/多日修复、严格验证收口 |
 | 2026-08-09 | **v2.0** | **因子替换为全球价值多因子 V2**：7 子因子（EP/BP/SP/股息/ROE/杠杆/动量）截面 RANK + 市值中性 + 降级归一化 + SCALE；三市降级声明；factor_id→`templeton_global_value_v2`；美股价格代理 99% winsorize；validate 三项全过、回测 A股近端强/区制依赖仍在，如实记录 |
 | 2026-08-09 | **v2.1** | **港股信号取反**（用户指令）：港股 `raw_score` 取负，factor.py/backtest.py `market=="hk"` 分支一致；港股 IC 由 −0.0541 → +0.0541（符号翻转，量级仍弱）；A股/美股不受影响 |
+
+## Pandadata compatibility
+
+[Pandadata 1.0.6 compatibility](references/pandadata-compatibility.md) — exact SDK baseline, validation scope, and shared guidance for all supported agent runtimes.
