@@ -66,3 +66,6 @@ python scripts/backtest.py --market cn --end-date 20250630 --period 20
 - IC 符号具区制依赖，复现强正结果须指定 `--end-date 20250630`
 - IC sign is regime-dependent; must specify `--end-date 20250630` to reproduce strong positive results
 - 港股/美股为降级口径，因子有效性弱 · HK/US use degraded factor definitions with weaker efficacy
+
+
+Pandadata 兼容维护：[abgyjaguo](https://github.com/abgyjaguo)，保留原项目作者署名。

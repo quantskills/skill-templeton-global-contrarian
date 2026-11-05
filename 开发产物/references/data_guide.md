@@ -16,7 +16,7 @@ token = panda_data.init_token(username, password, base_url="http://pandadata.pan
 
 ```python
 df = panda_data.get_index_indicator(
-    index_code=None,      # None 表示全市场指数
+    symbol=None,      # None 表示全市场指数
     start_date="20250630",
     end_date="20250630",
 )
@@ -78,18 +78,11 @@ df = panda_data.get_us_daily(
 获取个股的估值指标。
 
 ```python
-df = panda_data.get_stock_pv_indicator(
-    symbol=["000001.SZ", "600000.SH"],
-    date=None,            # None 表示最新
-    market="cn",          # cn/hk/us
-)
-
-# 或
-df = panda_data.pv_metric(
-    symbol=["000001.SZ"],
-    date=None,
-    market="cn",
-)
+import panda_data
+# Latest HK/US snapshot only: date bounds are not supported.
+# Never backfill historical research with this current snapshot.
+snapshot = panda_data.get_stock_pv_indicator(symbol=["AAPL"], fields=[])
+print(snapshot.head())
 ```
 
 返回字段（需实际探测确认）：
